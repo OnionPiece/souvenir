@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  generation: 1
+  labels:
+    app: souvenir
+  name: souvenir
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    deploymentconfig: souvenir
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        kubernetes.io/egress-bandwidth: 1024000.00k
+        kubernetes.io/ingress-bandwidth: 1024000.00k
+      labels:
+        app: souvenir
+        deploymentconfig: souvenir
+      name: souvenir
+      namespace:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: deploymentconfig
+                  operator: In
+                  values:
+                  - souvenir
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin
+        - name: GOBIN
+          value: /usr/local/go/bin
+        - name: GOPATH
+          value: /root/go
+        - name: ETCD_CA
+          value: /certs/ca
+        - name: ETCD_CERT
+          value: /certs/cert
+        - name: ETCD_KEY
+          value: /certs/key
+        - name: ETCD_ENDPOINTS
+          value:
+        image: 
+        imagePullPolicy: Always
+        name: souvenir
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /certs
+          name: certs
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name:
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs
+        secret:
+          defaultMode: 420
+          secretName: certs
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - souvenir
+      from:
+        kind: ImageStreamTag
+        name: souvenir:latest
+        namespace:
+    type: ImageChange

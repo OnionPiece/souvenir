@@ -1,0 +1,20 @@
+package: github.com/lizk1989/souvenir
+import:
+- package: github.com/coreos/etcd
+  version: v3.2.16
+  subpackages:
+  - clientv3
+- package: k8s.io/api
+  version: 11147472b7c934c474a2c484af3c0c5210b7a3af
+  subpackages:
+  - core/v1
+- package: k8s.io/apimachinery
+  version: 180eddb345a5be3a157cea1c624700ad5bd27b8f
+  subpackages:
+  - pkg/apis/meta/v1
+  - pkg/watch
+- package: k8s.io/client-go
+  version: v6.0.0
+  subpackages:
+  - kubernetes
+  - rest
