@@ -1,4 +1,4 @@
-package: github.com/lizk1989/souvenir
+package: github.com/OnionPiece/souvenir
 import:
 - package: github.com/coreos/etcd
   version: v3.2.16
